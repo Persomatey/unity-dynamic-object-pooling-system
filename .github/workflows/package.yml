@@ -1,0 +1,247 @@
+# AUTHOR: Hunter Goodin
+# DESCRIPTION: Automates building, versioning, and publishing Unity packages using GitHub Actions.
+# NOTES: Required environmnet fields: `PROJECT_PATH`, `PROJECT_NAME` 
+#        Please check the README for clearer instructions. 
+
+name: Build and Release Unity Package
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  PROJECT_PATH: unity_project
+  PACKAGE_NAME: com.yourcompany.packagename
+
+jobs:
+  determineVersion:
+    runs-on: ubuntu-22.04
+    outputs:
+      version: ${{ steps.version.outputs.tag }}
+      package_version: ${{ steps.version.outputs.package_version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: version
+        run: |
+          git fetch --tags
+          last_tag=$(git tag | grep '^v' | sort -V | tail -n1)
+          [ -z "$last_tag" ] && last_tag="v0.0.0"
+
+          base=${last_tag%.*}
+          patch=${last_tag##*.}
+          next_tag="${base}.$((patch + 1))"
+
+          echo "tag=$next_tag" >> $GITHUB_OUTPUT
+          echo "package_version=${next_tag#v}" >> $GITHUB_OUTPUT
+
+  validatePackage:
+    runs-on: ubuntu-22.04
+    needs: determineVersion
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate package structure
+        run: |
+          set -euo pipefail
+      
+          PACKAGE_PATH="$PROJECT_PATH/Packages/$PACKAGE_NAME"
+      
+          echo "Validating package at: $PACKAGE_PATH"
+      
+          if [ ! -d "$PACKAGE_PATH/Runtime" ]; then
+            echo "::error ::Runtime folder missing!"
+            exit 1
+          fi
+      
+          if [ ! -f "$PACKAGE_PATH/package.json" ]; then
+            echo "::error ::package.json missing!"
+            exit 1
+          fi
+      
+          echo "Package structure OK"
+
+  pushUpm:
+    runs-on: ubuntu-22.04
+    needs: [determineVersion, validatePackage]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update package.json version
+        run: |
+          PACKAGE_JSON="$PROJECT_PATH/Packages/$PACKAGE_NAME/package.json"
+          VERSION="${{ needs.determineVersion.outputs.package_version }}"
+  
+          echo "Setting package.json version to $VERSION"
+  
+          jq ".version = \"$VERSION\"" "$PACKAGE_JSON" > package.json.tmp
+          mv package.json.tmp "$PACKAGE_JSON"
+
+      - name: Build clean UPM package
+        shell: bash
+        run: |
+          set -euo pipefail
+      
+          PACKAGE_SRC="$PROJECT_PATH/Packages/$PACKAGE_NAME"
+          UPM_BUILD="$(mktemp -d)"
+      
+          echo "Building clean UPM package from: $PACKAGE_SRC"
+          echo "UPM build dir: $UPM_BUILD"
+      
+          rsync -av --exclude="Samples" "$PACKAGE_SRC/" "$UPM_BUILD/"
+      
+          if [ -d "$PACKAGE_SRC/Samples" ]; then
+            mkdir -p "$UPM_BUILD/Samples~"
+            rsync -av "$PACKAGE_SRC/Samples/" "$UPM_BUILD/Samples~/"
+          fi
+      
+          rm -f "$UPM_BUILD/Samples.meta"
+          if [ -d "$UPM_BUILD/Samples~" ] && [ ! -f "$UPM_BUILD/Samples~.meta" ]; then
+            cat > "$UPM_BUILD/Samples~.meta" <<EOF
+          fileFormatVersion: 2
+          guid: $(uuidgen | tr -d '-')
+          folderAsset: yes
+          timeCreated: $(date +%s)
+          licenseType: Free
+          DefaultImporter:
+            externalObjects: {}
+            userData:
+            assetBundleName:
+            assetBundleVariant:
+          EOF
+              fi
+              echo "UPM package build complete"
+              echo "UPM_BUILD=$UPM_BUILD" >> $GITHUB_ENV
+
+      - name: Create UPM package tarball
+        id: tarball
+        run: |
+          VERSION="${{ needs.determineVersion.outputs.package_version }}"
+          PACKAGE_NAME="${{ env.PACKAGE_NAME }}"
+          UPM_BUILD="${{ env.UPM_BUILD }}"
+      
+          ARCHIVE_NAME="$PACKAGE_NAME-$VERSION.tgz"
+          tar -czf "$ARCHIVE_NAME" -C "$UPM_BUILD" .
+      
+          echo "archive=$ARCHIVE_NAME" >> $GITHUB_OUTPUT
+
+      - name: Push package to upm branch
+        run: |
+          set -euo pipefail
+      
+          UPM_BUILD="${{ env.UPM_BUILD }}"
+      
+          echo "Preparing clean UPM branch from UPM_BUILD..."
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions@users.noreply.github.com"
+      
+          # Switch to a fresh orphan branch
+          git checkout --orphan upm
+          git rm -rf . || true
+      
+          # Copy only the cleaned UPM build contents into repo root
+          cp -R "$UPM_BUILD/." .
+      
+          # Minimal .gitignore to prevent accidental commits of archives
+          echo "*.tgz" > .gitignore
+          echo "*.zip" >> .gitignore
+      
+          git add .
+          git commit -m "Release ${{ needs.determineVersion.outputs.package_version }}"
+      
+          # Force push upm branch
+          git push -f origin upm
+      
+          # Push version tag
+          VERSION="${{ needs.determineVersion.outputs.package_version }}"
+          git tag -a "v$VERSION" -m "Release $VERSION"
+          git push origin "v$VERSION"
+      
+          echo "UPM branch updated cleanly."
+
+  createRelease:
+    runs-on: ubuntu-22.04
+    needs: [determineVersion, pushUpm]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate release notes from commits
+        run: |
+          set -euo pipefail
+      
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+      
+          # Echo installation instructions 
+          echo "## Install via Package Manager" > release_notes.md
+          echo "For latest release:" >> release_notes.md
+          echo "https://github.com/${{ github.repository }}.git#upm" >> release_notes.md
+          echo "For this release:" >> release_notes.md
+          echo "https://github.com/${{ github.repository }}.git#${{ needs.determineVersion.outputs.version }}" >> release_notes.md
+          echo "Or download the tarball file (.tgz/.zip) below." >> release_notes.md
+          echo "" >> release_notes.md
+      
+          # Echo changelist 
+          echo "## Commits in this release" >> release_notes.md
+          echo "" >> release_notes.md
+      
+          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            git log --reverse --pretty=format:"### %h — %s%n%n%b%n" >> release_notes.md
+          else
+            git log --reverse "$BEFORE..$AFTER" --pretty=format:"### %h — %s%n%n%b%n" >> release_notes.md
+          fi
+      
+          echo ""
+          echo "Generated release notes:"
+          cat release_notes.md
+
+      - name: Create UPM archives (.tgz and .zip)
+        id: archives
+        shell: bash
+        run: |
+          set -euo pipefail
+      
+          VERSION="${{ needs.determineVersion.outputs.version }}"
+          PACKAGE_NAME="${{ env.PACKAGE_NAME }}"
+          
+          # Temp staging dir
+          STAGE_DIR=$(mktemp -d)
+          rsync -av --exclude=".git" --exclude=".github" "$PROJECT_PATH/Packages/$PACKAGE_NAME/" "$STAGE_DIR/"
+      
+          TGZ_NAME="$PACKAGE_NAME-$VERSION.tgz"
+          ZIP_NAME="$PACKAGE_NAME-$VERSION.zip"
+      
+          # Write both archives outside the staging folder
+          tar -czf "$GITHUB_WORKSPACE/$TGZ_NAME" -C "$STAGE_DIR" .
+          (cd "$STAGE_DIR" && zip -r "$GITHUB_WORKSPACE/$ZIP_NAME" .)
+      
+          # Set outputs for GitHub release
+          echo "tgz=$GITHUB_WORKSPACE/$TGZ_NAME" >> $GITHUB_OUTPUT
+          echo "zip=$GITHUB_WORKSPACE/$ZIP_NAME" >> $GITHUB_OUTPUT
+      
+          echo "Created archives:"
+          ls -lah "$GITHUB_WORKSPACE/$TGZ_NAME" "$GITHUB_WORKSPACE/$ZIP_NAME"
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.determineVersion.outputs.version }}
+          name: Release ${{ needs.determineVersion.outputs.version }}
+          body_path: release_notes.md
+          files: |
+            ${{ steps.archives.outputs.tgz }}
+            ${{ steps.archives.outputs.zip }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
