@@ -1,0 +1,25 @@
+{
+  "name": "com.huntergoodin.objectpool",
+  "version": "0.0.2",
+  "displayName": "Dynamic Object Pooling System",
+  "description": "A dynamic object pooler that allows for multiple Prefab types, GameObjects, and Components.",
+  "documentationUrl": "https://github.com/Persomatey/unity-dynamic-object-pooling-system/blob/main/README.md",
+  "changelogUrl": "https://github.com/Persomatey/unity-dynamic-object-pooling-system/releases",
+  "license": "MIT",
+  "licensesUrl": "https://github.com/Persomatey/unity-package-ci-cd-system-template/blob/main/LICENSE.md",
+  "unity": "6000.0",
+  "author": {
+    "name": "Hunter Goodin",
+    "url": "https://github.com/Persomatey"
+  },
+  "dependencies": {
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "samples": [
+    {
+      "displayName": "Example Scene",
+      "description": "A sample scene demonstrating the package features.",
+      "path": "Samples~/ExampleScene"
+    }
+  ]
+}
