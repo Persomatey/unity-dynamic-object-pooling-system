@@ -15,7 +15,7 @@ permissions:
 
 env:
   PROJECT_PATH: unity_project
-  PACKAGE_NAME: com.yourcompany.packagename
+  PACKAGE_NAME: com.huntergoodin.objectpool
 
 jobs:
   determineVersion:

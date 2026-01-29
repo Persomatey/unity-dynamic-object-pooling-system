@@ -1,6 +1,6 @@
 {
-	"name": "com.yourcompany.packagename.Runtime",
-	"rootNamespace": "YourCompany.PackageName",
+	"name": "com.huntergoodin.objectpool.Runtime",
+	"rootNamespace": "HunterGoodin.DynamicObjectPooler",
 	"references": [
 	 	"Unity.TextMeshPro"
 	],

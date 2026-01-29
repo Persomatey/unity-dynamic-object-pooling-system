@@ -1,8 +1,8 @@
 {
-	"name": "com.yourcompany.packagename.Editor",
-	"rootNamespace": "YourCompany.PackageName",
+	"name": "com.huntergoodin.objectpool.Editor",
+	"rootNamespace": "HunterGoodin.DynamicObjectPooler",
 	"references": [
-		"com.yourcompany.packagename.Runtime"
+		"com.huntergoodin.objectpool.Runtime"
 	],
 	"includePlatforms": [
 		"Editor"
