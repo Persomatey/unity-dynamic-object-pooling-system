@@ -1,0 +1,25 @@
+{
+  "name": "com.yourcompany.packagename",
+  "version": "0.0.1",
+  "displayName": "Your Package Name",
+  "description": "A short description of what this package does.",
+  "documentationUrl": "https://github.com/Persomatey/unity-package-ci-cd-system-template/blob/main/README.md",
+  "changelogUrl": "https://github.com/Persomatey/unity-package-ci-cd-system-template/releases",
+  "license": "MIT",
+  "licensesUrl": "https://github.com/Persomatey/unity-package-ci-cd-system-template/blob/main/LICENSE.md",
+  "unity": "6000.0",
+  "author": {
+    "name": "Your Name or Company",
+    "url": "https://github.com/yourcompany"
+  },
+  "dependencies": {
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "samples": [
+    {
+      "displayName": "Example Scene",
+      "description": "A sample scene demonstrating the package features.",
+      "path": "Samples~/ExampleScene"
+    }
+  ]
+}
