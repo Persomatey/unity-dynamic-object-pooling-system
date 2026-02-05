@@ -10,20 +10,35 @@ public class ObjectPoolManager : MonoBehaviour
 		VFX,
 	}
 
+	// Singleton stuff 
+	public static ObjectPoolManager Instance => Instance;
+	private static ObjectPoolManager instance; 
+
 	[SerializeField] private bool addToDontDestroyOnLoad = false;
 
+	// Object pool stuff 
 	private GameObject emptyHolder;
 	private static GameObject projectilesEmpty;
 	private static GameObject vfxEmpty;
-
 	private static Dictionary<GameObject, ObjectPool<GameObject>> objectPools; 
 	private static Dictionary<GameObject, GameObject> cloneToPrefabMap; 
 
 	private void Awake()
 	{
+		// Singleton Stuff 
+		if (instance != null)
+		{
+			Destroy(gameObject);
+		}
+		else
+		{
+			instance = this;
+			DontDestroyOnLoad(gameObject);
+		}
+
+		// Object pool stuff 
 		objectPools = new Dictionary<GameObject, ObjectPool<GameObject>>();
 		cloneToPrefabMap = new Dictionary<GameObject, GameObject>();
-
 		SetUpEmpties(); 
 	}
 
@@ -37,14 +52,13 @@ public class ObjectPoolManager : MonoBehaviour
 		vfxEmpty = new GameObject("VFX");
 		vfxEmpty.transform.parent = emptyHolder.transform;
 
-		// If we want it persistant across scenes (we almost definitely don't but it's an option)
 		if (addToDontDestroyOnLoad)
 		{
 			DontDestroyOnLoad(vfxEmpty.transform.root); 
 		}
 	}
 
-	private static void CreatePool(GameObject prefab, Vector3 pos, Quaternion rot, PoolType pPoolType)
+	private void CreatePool(GameObject prefab, Vector3 pos, Quaternion rot, PoolType pPoolType)
 	{
 		Debug.Log($"Creating pool of {pPoolType}"); 
 
@@ -58,7 +72,7 @@ public class ObjectPoolManager : MonoBehaviour
 		objectPools.Add(prefab, pool); 
 	}
 
-	private static void CreatePool(GameObject prefab, Transform parent, Quaternion rot, PoolType pPoolType)
+	private void CreatePool(GameObject prefab, Transform parent, Quaternion rot, PoolType pPoolType)
 	{
 		ObjectPool<GameObject> pool = new ObjectPool<GameObject>(
 			createFunc: () => CreateObject(prefab, parent, rot, pPoolType),
@@ -70,7 +84,7 @@ public class ObjectPoolManager : MonoBehaviour
 		objectPools.Add(prefab, pool);
 	}
 
-	private static GameObject CreateObject(GameObject prefab, Vector3 pos, Quaternion rot, PoolType pPoolType)
+	private GameObject CreateObject(GameObject prefab, Vector3 pos, Quaternion rot, PoolType pPoolType)
 	{
 		prefab.SetActive(false);
 
@@ -84,7 +98,7 @@ public class ObjectPoolManager : MonoBehaviour
 		return obj; 
 	}
 
-	private static GameObject CreateObject(GameObject prefab, Transform parent, Quaternion rot, PoolType pPoolType)
+	private GameObject CreateObject(GameObject prefab, Transform parent, Quaternion rot, PoolType pPoolType)
 	{
 		prefab.SetActive(false);
 
@@ -98,17 +112,17 @@ public class ObjectPoolManager : MonoBehaviour
 		return obj;
 	}
 
-	private static void OnGetObject(GameObject obj)
+	private void OnGetObject(GameObject obj)
 	{
 		// Optional Logic for when we just need to get the object itself for some reasion 
 	}
 
-	private static void OnReleaseObject(GameObject obj)
+	private void OnReleaseObject(GameObject obj)
 	{
 		obj.SetActive(false); 
 	}
 
-	private static void OnDestroyObject(GameObject obj)
+	private void OnDestroyObject(GameObject obj)
 	{
 		if (cloneToPrefabMap.ContainsKey(obj))
 		{
@@ -116,7 +130,7 @@ public class ObjectPoolManager : MonoBehaviour
 		}
 	}
 
-	private static GameObject SetParentObject(PoolType pPoolType)
+	private GameObject SetParentObject(PoolType pPoolType)
 	{
 		switch (pPoolType)
 		{
@@ -130,7 +144,7 @@ public class ObjectPoolManager : MonoBehaviour
 		}
 	}
 
-	private static T SpawnObject<T>(GameObject objectToSpawn, Transform parent, Quaternion spawnRot, PoolType pPoolType) where T : Object
+	private T SpawnObject<T>(GameObject objectToSpawn, Transform parent, Quaternion spawnRot, PoolType pPoolType)where T : Object
 	{
 		// Check if pool already exists, if it doesn't, create it now 
 		if (!objectPools.ContainsKey(objectToSpawn))
@@ -189,7 +203,7 @@ public class ObjectPoolManager : MonoBehaviour
 		}
 	}
 
-	private static T SpawnObject<T>(GameObject objectToSpawn, Vector3 spawnPos, Quaternion spawnRot, PoolType pPoolType) where T : Object
+	private T SpawnObject<T>(GameObject objectToSpawn, Vector3 spawnPos, Quaternion spawnRot, PoolType pPoolType)where T : Object
 	{
 		// Check if pool already exists, if it doesn't, create it now 
 		if (!objectPools.ContainsKey(objectToSpawn))
@@ -247,31 +261,31 @@ public class ObjectPoolManager : MonoBehaviour
 		}
 	}
 
-	public static T SpawnObject<T>(T typePrefab, Vector3 spawnPos, Quaternion spawnRot, PoolType pPoolType) where T : Component
+	public T SpawnObject<T>(T typePrefab, Vector3 spawnPos, Quaternion spawnRot, PoolType pPoolType)where T : Component
 	{
 		// Since our other one is so generic, we can just use that but return a Component type explicitly 
 		return SpawnObject<T>(typePrefab.gameObject, spawnPos, spawnRot, pPoolType);
 	}
 
-	public static GameObject SpawnObject(GameObject objectToSpawn, Vector3 spawnPos, Quaternion spawnRot, PoolType pPoolType)
+	public GameObject SpawnObject(GameObject objectToSpawn, Vector3 spawnPos, Quaternion spawnRot, PoolType pPoolType)
 	{
 		// Likewise but return a GameObject type explicitly 
 		return SpawnObject<GameObject>(objectToSpawn, spawnPos, spawnRot, pPoolType);
 	}
 
-	public static T SpawnObject<T>(T typePrefab, Transform parent, Quaternion spawnRot, PoolType pPoolType) where T : Component
+	public T SpawnObject<T>(T typePrefab, Transform parent, Quaternion spawnRot, PoolType pPoolType)where T : Component
 	{
 		// Since our other one is so generic, we can just use that but return a Component type explicitly 
 		return SpawnObject<T>(typePrefab.gameObject, parent, spawnRot, pPoolType);
 	}
 
-	public static GameObject SpawnObject(GameObject objectToSpawn, Transform parent, Quaternion spawnRot, PoolType pPoolType)
+	public GameObject SpawnObject(GameObject objectToSpawn, Transform parent, Quaternion spawnRot, PoolType pPoolType)
 	{
 		// Likewise but return a GameObject type explicitly 
 		return SpawnObject<GameObject>(objectToSpawn, parent, spawnRot, pPoolType);
 	}
 
-	public static void ReturnObjectToPool(GameObject obj, PoolType pPoolType)
+	public void ReturnObjectToPool(GameObject obj, PoolType pPoolType)
 	{
 		if (cloneToPrefabMap.TryGetValue(obj, out GameObject prefab))
 		{
