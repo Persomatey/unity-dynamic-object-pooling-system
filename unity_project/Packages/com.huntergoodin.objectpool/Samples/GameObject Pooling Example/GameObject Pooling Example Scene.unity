@@ -1142,7 +1142,7 @@ GameObject:
   - component: {fileID: 969943777}
   - component: {fileID: 969943776}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Prompt TMP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1590,6 +1590,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7675254756989405520, guid: b4082dfbeaf2c8c4b9e17c5e03b24d42, type: 3}
+      propertyPath: vfx
+      value: 
+      objectReference: {fileID: 950407178912632011, guid: 1f2b9950308382a48a0e662850f94451, type: 3}
+    - target: {fileID: 7675254756989405520, guid: b4082dfbeaf2c8c4b9e17c5e03b24d42, type: 3}
+      propertyPath: projectile
+      value: 
+      objectReference: {fileID: 7708136665139184086, guid: 99a59308f67ba084c849cd23161c0b2a, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

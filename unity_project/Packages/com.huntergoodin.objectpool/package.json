@@ -17,9 +17,14 @@
   },
   "samples": [
     {
-      "displayName": "Example Scene",
-      "description": "A sample scene demonstrating the package features.",
-      "path": "Samples~/ExampleScene"
+      "displayName": "GameObject Pooling",
+      "description": "Showcases object pooling of GameObjects with Projectiles and VFX.",
+      "path": "Samples~/GameObject Pooling Example"
+    },
+    {
+      "displayName": "Component Pooling",
+      "description": "Showcases object pooling of Components using AudioSources",
+      "path": "Samples~/Component Pooling Example"
     }
   ]
 }

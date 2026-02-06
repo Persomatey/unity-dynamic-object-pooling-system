@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7618491363708994934}
-  - component: {fileID: 9006005969443708795}
+  - component: {fileID: 288165660898761324}
   m_Layer: 0
   m_Name: Object Pool System
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9006005969443708795
+--- !u!114 &288165660898761324
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

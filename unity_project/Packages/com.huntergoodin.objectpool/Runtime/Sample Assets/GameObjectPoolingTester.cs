@@ -2,7 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-public class SystemTester : MonoBehaviour
+public class GameObjectPoolingTester : MonoBehaviour
 {
 	[SerializeField] private GameObject projectile;
 	[SerializeField] private GameObject vfx;
@@ -22,13 +22,13 @@ public class SystemTester : MonoBehaviour
 			SpawnProjectile(); 
 		}
 
-		projectilesActive.text = $"Active Projectiles: {ObjectPoolManager.Instance.ObjectPoolActiveSize(ObjectPoolManager.PoolType.Projectiles, projectile)}";
-		projectilesInactive.text = $"Inactive Projectiles: {ObjectPoolManager.Instance.ObjectPoolInactiveSize(ObjectPoolManager.PoolType.Projectiles, projectile)}";
-		projectilesTotal.text = $"Total Projectiles: {ObjectPoolManager.Instance.ObjectPoolTotalSize(ObjectPoolManager.PoolType.Projectiles, projectile)}";
+		projectilesActive.text = $"Active Projectiles: {ObjectPoolManager.Instance.GetObjectPoolActiveSize(ObjectPoolManager.PoolType.Projectiles, projectile)}";
+		projectilesInactive.text = $"Inactive Projectiles: {ObjectPoolManager.Instance.GetObjectPoolInactiveSize(ObjectPoolManager.PoolType.Projectiles, projectile)}";
+		projectilesTotal.text = $"Total Projectiles: {ObjectPoolManager.Instance.GetObjectPoolTotalSize(ObjectPoolManager.PoolType.Projectiles, projectile)}";
 
-		vfxActive.text = $"Active VFX: {ObjectPoolManager.Instance.ObjectPoolActiveSize(ObjectPoolManager.PoolType.VFX, vfx)}";
-		vfxInactive.text = $"Inactive VFX: {ObjectPoolManager.Instance.ObjectPoolInactiveSize(ObjectPoolManager.PoolType.VFX, vfx)}";
-		vfxTotal.text = $"Total VFX: {ObjectPoolManager.Instance.ObjectPoolTotalSize(ObjectPoolManager.PoolType.VFX, vfx)}";
+		vfxActive.text = $"Active VFX: {ObjectPoolManager.Instance.GetObjectPoolActiveSize(ObjectPoolManager.PoolType.VFX, vfx)}";
+		vfxInactive.text = $"Inactive VFX: {ObjectPoolManager.Instance.GetObjectPoolInactiveSize(ObjectPoolManager.PoolType.VFX, vfx)}";
+		vfxTotal.text = $"Total VFX: {ObjectPoolManager.Instance.GetObjectPoolTotalSize(ObjectPoolManager.PoolType.VFX, vfx)}";
 	}
 
 	public void SpawnProjectile()

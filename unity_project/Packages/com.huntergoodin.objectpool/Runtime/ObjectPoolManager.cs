@@ -8,6 +8,7 @@ public class ObjectPoolManager : MonoBehaviour
 	{
 		Projectiles,
 		VFX,
+		AudioSource
 	}
 
 	// Singleton stuff 
@@ -20,6 +21,7 @@ public class ObjectPoolManager : MonoBehaviour
 	private GameObject emptyHolder;
 	private static GameObject projectilesEmpty;
 	private static GameObject vfxEmpty;
+	private static GameObject audiosourceEmpty;
 	private static Dictionary<GameObject, ObjectPool<GameObject>> objectPools; 
 	private static Dictionary<GameObject, GameObject> cloneToPrefabMap; 
 
@@ -56,7 +58,8 @@ public class ObjectPoolManager : MonoBehaviour
 		vfxEmpty = new GameObject("VFX");
 		vfxEmpty.transform.parent = emptyHolder.transform;
 
-
+		audiosourceEmpty = new GameObject("AudioSources");
+		audiosourceEmpty.transform.parent = emptyHolder.transform;
 	}
 
 	private void CreatePool(GameObject prefab, Vector3 pos, Quaternion rot, PoolType pPoolType)
@@ -138,7 +141,9 @@ public class ObjectPoolManager : MonoBehaviour
 			case PoolType.Projectiles:
 				return projectilesEmpty; 
 			case PoolType.VFX:
-				return vfxEmpty; 
+				return vfxEmpty;
+			case PoolType.AudioSource:
+				return audiosourceEmpty;
 			default:
 				Debug.LogError($"ERROR: Invalid PoolType passed ({pPoolType})");
 				return null; 
@@ -262,6 +267,8 @@ public class ObjectPoolManager : MonoBehaviour
 		}
 	}
 
+	// Public accessor functions 
+
 	public T SpawnObject<T>(T typePrefab, Vector3 spawnPos, Quaternion spawnRot, PoolType pPoolType)where T : Component
 	{
 		// Since our other one is so generic, we can just use that but return a Component type explicitly 
@@ -310,7 +317,9 @@ public class ObjectPoolManager : MonoBehaviour
 		}
 	}
 
-	public int ObjectPoolTotalSize(PoolType poolType, GameObject prefab)
+	// Public count getters 
+
+	public int GetObjectPoolTotalSize(PoolType poolType, GameObject prefab)
 	{
 		if (objectPools == null || objectPools.Count == 0)
 		{
@@ -321,6 +330,7 @@ public class ObjectPoolManager : MonoBehaviour
 		{
 			PoolType.Projectiles => prefab, 
 			PoolType.VFX => prefab, 
+			PoolType.AudioSource => prefab,
 			_ => null
 		};
 
@@ -332,7 +342,7 @@ public class ObjectPoolManager : MonoBehaviour
 		return pool.CountAll;
 	}
 
-	public int ObjectPoolActiveSize(PoolType poolType, GameObject prefab)
+	public int GetObjectPoolActiveSize(PoolType poolType, GameObject prefab)
 	{
 		if (objectPools == null || objectPools.Count == 0)
 		{
@@ -343,6 +353,7 @@ public class ObjectPoolManager : MonoBehaviour
 		{
 			PoolType.Projectiles => prefab,
 			PoolType.VFX => prefab,
+			PoolType.AudioSource => prefab,
 			_ => null
 		};
 
@@ -354,7 +365,7 @@ public class ObjectPoolManager : MonoBehaviour
 		return pool.CountActive;
 	}
 
-	public int ObjectPoolInactiveSize(PoolType poolType, GameObject prefab)
+	public int GetObjectPoolInactiveSize(PoolType poolType, GameObject prefab)
 	{
 		if (objectPools == null || objectPools.Count == 0)
 		{
@@ -365,6 +376,7 @@ public class ObjectPoolManager : MonoBehaviour
 		{
 			PoolType.Projectiles => prefab,
 			PoolType.VFX => prefab,
+			PoolType.AudioSource => prefab,
 			_ => null
 		};
 
