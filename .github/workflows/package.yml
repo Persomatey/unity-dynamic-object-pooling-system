@@ -186,10 +186,10 @@ jobs:
           # Echo installation instructions 
           echo "## Install via Package Manager" > release_notes.md
           echo "For latest release:" >> release_notes.md
-          echo "https://github.com/${{ github.repository }}.git#upm" >> release_notes.md
+          echo "\`https://github.com/${{ github.repository }}.git#upm\`" >> release_notes.md
           echo "For this release:" >> release_notes.md
-          echo "https://github.com/${{ github.repository }}.git#${{ needs.determineVersion.outputs.version }}" >> release_notes.md
-          echo "Or download the tarball file (.tgz/.zip) below." >> release_notes.md
+          echo "\`https://github.com/${{ github.repository }}.git#${{ needs.determineVersion.outputs.version }}\`" >> release_notes.md
+          echo "_Or download the tarball file (.tgz/.zip) below._" >> release_notes.md
           echo "" >> release_notes.md
       
           # Echo changelist 
