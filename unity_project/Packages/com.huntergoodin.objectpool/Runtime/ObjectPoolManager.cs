@@ -11,7 +11,7 @@ public class ObjectPoolManager : MonoBehaviour
 	}
 
 	// Singleton stuff 
-	public static ObjectPoolManager Instance => Instance;
+	public static ObjectPoolManager Instance => instance;
 	private static ObjectPoolManager instance; 
 
 	[SerializeField] private bool addToDontDestroyOnLoad = false;
@@ -33,6 +33,10 @@ public class ObjectPoolManager : MonoBehaviour
 		else
 		{
 			instance = this;
+		}
+
+		if (addToDontDestroyOnLoad)
+		{
 			DontDestroyOnLoad(gameObject);
 		}
 
@@ -52,10 +56,7 @@ public class ObjectPoolManager : MonoBehaviour
 		vfxEmpty = new GameObject("VFX");
 		vfxEmpty.transform.parent = emptyHolder.transform;
 
-		if (addToDontDestroyOnLoad)
-		{
-			DontDestroyOnLoad(vfxEmpty.transform.root); 
-		}
+
 	}
 
 	private void CreatePool(GameObject prefab, Vector3 pos, Quaternion rot, PoolType pPoolType)
@@ -307,5 +308,71 @@ public class ObjectPoolManager : MonoBehaviour
 		{
 			Debug.LogError($"ERROR: Trying to return an object that is not pooled ({obj.name})"); 
 		}
+	}
+
+	public int ObjectPoolTotalSize(PoolType poolType, GameObject prefab)
+	{
+		if (objectPools == null || objectPools.Count == 0)
+		{
+			return 0;
+		}
+
+		GameObject targetPrefab = poolType switch
+		{
+			PoolType.Projectiles => prefab, 
+			PoolType.VFX => prefab, 
+			_ => null
+		};
+
+		if (targetPrefab == null || !objectPools.TryGetValue(targetPrefab, out var pool))
+		{
+			return 0;
+		}
+
+		return pool.CountAll;
+	}
+
+	public int ObjectPoolActiveSize(PoolType poolType, GameObject prefab)
+	{
+		if (objectPools == null || objectPools.Count == 0)
+		{
+			return 0;
+		}
+
+		GameObject targetPrefab = poolType switch
+		{
+			PoolType.Projectiles => prefab,
+			PoolType.VFX => prefab,
+			_ => null
+		};
+
+		if (targetPrefab == null || !objectPools.TryGetValue(targetPrefab, out var pool))
+		{
+			return 0;
+		}
+
+		return pool.CountActive;
+	}
+
+	public int ObjectPoolInactiveSize(PoolType poolType, GameObject prefab)
+	{
+		if (objectPools == null || objectPools.Count == 0)
+		{
+			return 0;
+		}
+
+		GameObject targetPrefab = poolType switch
+		{
+			PoolType.Projectiles => prefab,
+			PoolType.VFX => prefab,
+			_ => null
+		};
+
+		if (targetPrefab == null || !objectPools.TryGetValue(targetPrefab, out var pool))
+		{
+			return 0;
+		}
+
+		return pool.CountInactive;
 	}
 }
