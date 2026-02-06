@@ -1,0 +1,16 @@
+{
+	"name": "com.huntergoodin.objectpool.Runtime",
+	"rootNamespace": "HunterGoodin.DynamicObjectPooler",
+	"references": [
+	 	"Unity.TextMeshPro"
+	],
+	"includePlatforms": [],
+	"excludePlatforms": [],
+	"allowUnsafeCode": false,
+	"overrideReferences": false,
+	"precompiledReferences": [],
+	"autoReferenced": true,
+	"defineConstraints": [],
+	"versionDefines": [],
+	"noEngineReferences": false
+}
