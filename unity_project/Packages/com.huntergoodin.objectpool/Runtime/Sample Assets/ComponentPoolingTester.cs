@@ -14,17 +14,12 @@ namespace HunterGoodin.DynamicObjectPooler
 
 		private void Update()
 		{
-			if (Input.GetKeyDown(KeyCode.Space))
-			{
-				SpawnComponent();
-			}
-
 			audioSourcesActive.text = $"Active VFX: {ObjectPoolManager.Instance.GetObjectPoolActiveSize(ObjectPoolManager.PoolType.AudioSource, audioSourcePrefab)}";
 			audioSourcesInactive.text = $"Inactive VFX: {ObjectPoolManager.Instance.GetObjectPoolInactiveSize(ObjectPoolManager.PoolType.AudioSource, audioSourcePrefab)}";
 			audioSourcesTotal.text = $"Total VFX: {ObjectPoolManager.Instance.GetObjectPoolTotalSize(ObjectPoolManager.PoolType.AudioSource, audioSourcePrefab)}";
 		}
 
-		private void SpawnComponent()
+		public void SpawnComponent()
 		{
 			AudioSource source = ObjectPoolManager.Instance.SpawnObject<AudioSource>(audioSourcePrefab.GetComponent<AudioSource>(), Vector3.zero, Quaternion.identity, ObjectPoolManager.PoolType.AudioSource);
 			StartCoroutine(DelayedDespawnComponent(source)); 

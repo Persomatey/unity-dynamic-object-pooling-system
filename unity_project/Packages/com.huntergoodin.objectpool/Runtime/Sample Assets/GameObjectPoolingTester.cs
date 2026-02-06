@@ -17,11 +17,6 @@ public class GameObjectPoolingTester : MonoBehaviour
 
 	private void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-			SpawnProjectile(); 
-		}
-
 		projectilesActive.text = $"Active Projectiles: {ObjectPoolManager.Instance.GetObjectPoolActiveSize(ObjectPoolManager.PoolType.Projectiles, projectile)}";
 		projectilesInactive.text = $"Inactive Projectiles: {ObjectPoolManager.Instance.GetObjectPoolInactiveSize(ObjectPoolManager.PoolType.Projectiles, projectile)}";
 		projectilesTotal.text = $"Total Projectiles: {ObjectPoolManager.Instance.GetObjectPoolTotalSize(ObjectPoolManager.PoolType.Projectiles, projectile)}";
@@ -34,7 +29,7 @@ public class GameObjectPoolingTester : MonoBehaviour
 	public void SpawnProjectile()
 	{
 		// Spawn projectile 
-		GameObject projObj = ObjectPoolManager.Instance.SpawnObject(projectile, transform.position, transform.rotation, ObjectPoolManager.PoolType.Projectiles); // This basically replaces GameObject.Instantiate() 
+		GameObject projObj = ObjectPoolManager.Instance.SpawnObject(projectile, transform.position, transform.rotation, ObjectPoolManager.PoolType.Projectiles); // This basically replaces Instantiate() 
 		Vector3 randomDirection = Quaternion.AngleAxis(Random.Range(0f, 25), Random.onUnitSphere) * transform.forward;
 		projObj.GetComponent<Rigidbody>().linearVelocity = randomDirection * 10; 
 		StartCoroutine(DelayedDespawnObject(projObj, ObjectPoolManager.PoolType.Projectiles, 1f));
