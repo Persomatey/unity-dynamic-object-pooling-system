@@ -16,9 +16,10 @@ Happy packaging!
 </details>
 
 For latest release:</br>
-`https://github.com/Persomatey/unity-package-ci-cd-system-template.git#upm`</br>
+`https://github.com/Persomatey/unity-dynamic-object-pooling-system.git#upm
+`</br>
 Or install specific releases:</br>
-`https://github.com/Persomatey/unity-package-ci-cd-system-template.git#v#.#.#`
+`https://github.com/Persomatey/unity-dynamic-object-pooling-system.git#v#.#.#`
 
 ### Download the tarball directly from release
 <details>
