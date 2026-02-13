@@ -1,0 +1,30 @@
+{
+  "name": "com.huntergoodin.objectpool",
+  "version": "1.0.4",
+  "displayName": "Dynamic Object Pooling System",
+  "description": "A dynamic object pooler that allows for multiple Prefab types, GameObjects, and Components.",
+  "documentationUrl": "https://github.com/Persomatey/unity-dynamic-object-pooling-system/blob/main/README.md",
+  "changelogUrl": "https://github.com/Persomatey/unity-dynamic-object-pooling-system/releases",
+  "license": "MIT",
+  "licensesUrl": "https://github.com/Persomatey/unity-package-ci-cd-system-template/blob/main/LICENSE.md",
+  "unity": "6000.0",
+  "author": {
+    "name": "Hunter Goodin",
+    "url": "https://www.huntergoodin.tech"
+  },
+  "dependencies": {
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "samples": [
+    {
+      "displayName": "GameObject Pooling",
+      "description": "Showcases object pooling of GameObjects with Projectiles and VFX.",
+      "path": "Samples~/GameObject Pooling Example"
+    },
+    {
+      "displayName": "Component Pooling",
+      "description": "Showcases object pooling of Components using AudioSources",
+      "path": "Samples~/Component Pooling Example"
+    }
+  ]
+}
