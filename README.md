@@ -85,4 +85,7 @@ Or install specific releases:</br>
 
 ## Future Plans 
 <i>No plans on when I'd release these features, would likely depend on my needs for a specific project/boredom/random interest in moving this project along.</i>
-- Hello, World 
+- Make some of the functions DRYer 
+	- Not that it really matters since the system itself shouldn't need to be touched much, but it'd be nice for my own sanity
+- Contemplate if `OnGetObject()` is actually necessary or useful in any way
+	- Every project I've worked on has very different repooling needs, and even sometimes object-to-object within the same project, and I usually just use a reset function in the pooled object itself anyways. 
