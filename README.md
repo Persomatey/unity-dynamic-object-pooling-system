@@ -1,4 +1,4 @@
-# Unity Package CI/CD System Template 
+# Unity Dynamic Object Pooling System
 A simple object pooling package for Unity. A singleton manager that efficiently spawns and reuses GameObjects using Unity’s built-in ObjectPool system. Includes a sample scene demonstrating projectiles and VFX pooling.
 
 This is to effectively replace `Instantiate()` and `Destroy()` functions for objects you create multiple of in your project with `ObjectPoolManager.Instance.SpawnObject()` and `ObjectPoolManager.Instance.ReturnObjectToPool()`. 
