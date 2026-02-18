@@ -182,15 +182,15 @@ namespace HunterGoodin.DynamicObjectPooler
 				obj.transform.localPosition = Vector3.zero;
 				obj.transform.localRotation = spawnRot;
 
-				if (obj.GetComponent<Rigidbody>())
+				if (TryGetComponent<Rigidbody>(out Rigidbody rb))
 				{
-					obj.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-					obj.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+					rb.linearVelocity = Vector3.zero;
+					rb.angularVelocity = Vector3.zero;
 				}
 
-				if (obj.GetComponent<TrailRenderer>())
+				if (TryGetComponent<TrailRenderer>(out TrailRenderer tr))
 				{
-					obj.GetComponent<TrailRenderer>().Clear();
+					tr.Clear();
 				}
 
 				obj.SetActive(true);
@@ -240,15 +240,15 @@ namespace HunterGoodin.DynamicObjectPooler
 				obj.transform.position = spawnPos;
 				obj.transform.rotation = spawnRot;
 
-				if (obj.GetComponent<Rigidbody>())
+				if (TryGetComponent<Rigidbody>(out Rigidbody rb))
 				{
-					obj.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-					obj.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+					rb.linearVelocity = Vector3.zero;
+					rb.angularVelocity = Vector3.zero;
 				}
 
-				if (obj.GetComponent<TrailRenderer>())
+				if (TryGetComponent<TrailRenderer>(out TrailRenderer tr))
 				{
-					obj.GetComponent<TrailRenderer>().Clear();
+					tr.Clear();
 				}
 
 				obj.SetActive(true);
