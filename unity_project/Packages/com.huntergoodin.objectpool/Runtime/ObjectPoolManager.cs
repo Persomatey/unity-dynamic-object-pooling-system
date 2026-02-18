@@ -105,7 +105,7 @@ namespace HunterGoodin.DynamicObjectPooler
 
 			prefab.SetActive(true);
 
-			GameObject parentObj = SetParentObject(pPoolType);
+			GameObject parentObj = GetParentObject(pPoolType);
 			obj.transform.SetParent(parentObj.transform);
 
 			return obj;
@@ -143,7 +143,7 @@ namespace HunterGoodin.DynamicObjectPooler
 			}
 		}
 
-		private GameObject SetParentObject(PoolType pPoolType)
+		private GameObject GetParentObject(PoolType pPoolType)
 		{
 			switch (pPoolType)
 			{
@@ -306,7 +306,7 @@ namespace HunterGoodin.DynamicObjectPooler
 		{
 			if (cloneToPrefabMap.TryGetValue(obj, out GameObject prefab))
 			{
-				GameObject parentObject = SetParentObject(pPoolType);
+				GameObject parentObject = GetParentObject(pPoolType);
 
 				// If it's not parented for whatever reason, reparent it so it goes back where it's supposed to 
 				if (obj.transform.parent != parentObject.transform)
