@@ -26,6 +26,7 @@ namespace HunterGoodin.DynamicObjectPooler
 		private static GameObject audiosourceEmpty;
 		private static Dictionary<GameObject, ObjectPool<GameObject>> objectPools;
 		private static Dictionary<GameObject, GameObject> cloneToPrefabMap;
+		private static Dictionary<GameObject, PoolType> prefabToPoolType;
 
 		private void Awake()
 		{
@@ -47,6 +48,8 @@ namespace HunterGoodin.DynamicObjectPooler
 			// Object pool stuff 
 			objectPools = new Dictionary<GameObject, ObjectPool<GameObject>>();
 			cloneToPrefabMap = new Dictionary<GameObject, GameObject>();
+			prefabToPoolType = new Dictionary<GameObject, PoolType>();
+
 			SetUpEmpties();
 		}
 
@@ -76,10 +79,13 @@ namespace HunterGoodin.DynamicObjectPooler
 			);
 
 			objectPools.Add(prefab, pool);
+			prefabToPoolType[prefab] = pPoolType;
 		}
 
 		private void CreatePool(GameObject prefab, Transform parent, Quaternion rot, PoolType pPoolType)
 		{
+			Debug.Log($"Creating pool of {pPoolType}");
+
 			ObjectPool<GameObject> pool = new ObjectPool<GameObject>(
 				createFunc: () => CreateObject(prefab, parent, rot, pPoolType),
 				actionOnGet: OnGetObject,
@@ -88,6 +94,7 @@ namespace HunterGoodin.DynamicObjectPooler
 			);
 
 			objectPools.Add(prefab, pool);
+			prefabToPoolType[prefab] = pPoolType;
 		}
 
 		private GameObject CreateObject(GameObject prefab, Vector3 pos, Quaternion rot, PoolType pPoolType)
@@ -315,7 +322,10 @@ namespace HunterGoodin.DynamicObjectPooler
 			}
 			else
 			{
-				Debug.LogError($"ERROR: Trying to return an object that is not pooled ({obj.name})");
+				if (obj)
+				{
+					Debug.LogError($"ERROR: Trying to return an object that is not pooled ({obj.name})");
+				}
 			}
 		}
 
@@ -388,6 +398,91 @@ namespace HunterGoodin.DynamicObjectPooler
 			}
 
 			return pool.CountInactive;
+		}
+
+		// Clear functions 
+
+		public void ClearPool(GameObject prefab)
+		{
+			if (objectPools == null || !objectPools.ContainsKey(prefab))
+			{
+				Debug.LogWarning($"No pool exists for prefab {prefab.name}");
+				return;
+			}
+			ObjectPool<GameObject> pool = objectPools[prefab];
+
+			// Destroy the GameObjects 
+			List<GameObject> toDestroy = new List<GameObject>();
+
+			foreach (var kvp in cloneToPrefabMap)
+			{
+				if (kvp.Value == prefab)
+				{
+					toDestroy.Add(kvp.Key);
+				}
+			}
+
+			foreach (var obj in toDestroy)
+			{
+				cloneToPrefabMap.Remove(obj);
+
+				if (obj != null)
+				{ 
+					Destroy(obj);
+				}
+			}
+
+			// Clear the pool itself
+			pool.Clear();
+			objectPools.Remove(prefab);
+
+			Debug.Log($"Cleared pool for prefab {prefab.name}");
+		}
+
+		public void ClearPoolsOfType(PoolType poolType)
+		{
+			if (objectPools == null || objectPools.Count == 0)
+			{
+				Debug.LogWarning("No pools to clear.");
+				return;
+			}
+
+			List<GameObject> prefabsToClear = new List<GameObject>();
+
+			foreach (var kvp in prefabToPoolType)
+			{
+				if (kvp.Value == poolType)
+				{
+					prefabsToClear.Add(kvp.Key);
+				}
+			}
+
+			foreach (GameObject prefab in prefabsToClear)
+			{
+				ClearPool(prefab);
+			}
+
+			Debug.Log($"Cleared all pools of type {poolType}");
+		}
+
+
+		public void ClearAllPools()
+		{
+			if (objectPools == null || objectPools.Count == 0)
+			{
+				Debug.LogWarning("No pools to clear.");
+				return;
+			}
+
+			// Make a list of all prefabs so we can iterate safely while modifying the dictionary
+			List<GameObject> allPrefabs = new List<GameObject>(objectPools.Keys);
+
+			foreach (GameObject prefab in allPrefabs)
+			{
+				ClearPool(prefab);
+			}
+
+			Debug.Log("Cleared all object pools.");
 		}
 	}
 }
